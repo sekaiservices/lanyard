@@ -17,7 +17,8 @@ defmodule Lanyard.Connectivity.Redis do
           if String.contains?(url, "://"), do: url, else: "redis://" <> url
 
         true ->
-          "redis://#{System.get_env("REDIS_HOST")}:6379"
+          host = System.get_env("REDIS_HOST") || "redis"
+          "redis://#{host}:6379"
       end
 
     # Redix connects over IPv4 by default and won't detect IPv6 from a hostname
