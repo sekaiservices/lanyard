@@ -8,17 +8,21 @@ defmodule Lanyard.Connectivity.Redis do
   end
 
   def init(_) do
+    raw = System.get_env("REDIS_URL") || System.get_env("REDIS_HOST") || "redis:6379"
+
     uri =
       cond do
-        Application.get_env(:lanyard, :redis_uri) != nil ->
-          Application.get_env(:lanyard, :redis_uri)
+        String.contains?(raw, "://") ->
+          raw
 
-        url = System.get_env("REDIS_URL") ->
-          if String.contains?(url, "://"), do: url, else: "redis://" <> url
+        String.match?(raw, ~r/^\d+$/) ->
+          "redis://redis:#{raw}"
+
+        String.contains?(raw, ":") ->
+          "redis://" <> raw
 
         true ->
-          host = System.get_env("REDIS_HOST") || "redis"
-          "redis://#{host}:6379"
+          "redis://#{raw}:6379"
       end
 
     # Redix connects over IPv4 by default and won't detect IPv6 from a hostname
