@@ -89,6 +89,8 @@ defmodule Lanyard.Connectivity.Redis do
     value = command(state.client, ["LRANGE", key, "#{start}", "#{stop}"])
     {:reply, value, state}
   end
+
+  def handle_call({:get, key}, _from, state) do
     value = command(state[:client], ["GET", key])
 
     {:reply, value, state}
